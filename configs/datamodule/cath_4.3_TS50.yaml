@@ -1,0 +1,24 @@
+defaults:
+  - cath_4.3.yaml
+
+_target_: TS50
+
+# data_dir: ${data_dir} # data_dir is specified in config.yaml
+data_dir: '${paths.data_dir}/cath_4.3'
+chain_set_jsonl: 'chain_set.jsonl'
+chain_set_splits_json: 'chain_set_splits.json'
+max_length: 500 # 393
+atoms: ['N', 'CA', 'C', 'O']
+
+# alphabet related
+proteinseq_toks:  ['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V']
+prepend_toks: ["<pad>", "<unk>"]
+append_toks: []
+prepend_bos: false
+append_eos: false
+
+# dataloader related
+max_tokens: 6000
+sort: true
+num_workers: 8
+pin_memory: true

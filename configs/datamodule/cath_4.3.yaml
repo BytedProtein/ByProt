@@ -1,0 +1,19 @@
+_target_: cath
+
+# data_dir: ${data_dir} # data_dir is specified in config.yaml
+data_dir: '${paths.data_dir}/cath_4.3'
+chain_set_jsonl: 'chain_set.jsonl'
+chain_set_splits_json: 'chain_set_splits.json'
+max_length: 500 # 393
+atoms: ['N', 'CA', 'C', 'O']
+
+# alphabet related
+alphabet:
+  name: esm
+  featurizer: cath
+
+# dataloader related
+max_tokens: 6000
+sort: true
+num_workers: 8
+pin_memory: true

@@ -1,0 +1,75 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - /datamodule: cath_4.3  # note that gvp-transformer were trained on CATH 4.3, 
+                           # so it could be at the risk of data leakage if evaluating on cath 4.2
+  - /callbacks: fixedbb
+  - /trainer: default
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+# name of the run determines folder name in logs
+name: "fixedbb/cath_4.3/lm_design_esm1b_150m_gvptransf"
+
+datamodule:
+  alphabet:
+    name: esm
+    featurizer: cath
+    featurizer_cfg:
+      coord_nan_to_zero: false
+
+model:
+  _target_: esm2_adapter_gvptrans
+  encoder:
+    d_model: 512
+
+  name: esm2_t33_650M_UR50D
+  adapter_layer_indices: [-1, ]
+  separate_loss: true
+
+task:
+  _target_: fixedbb/cmlm
+  alphabet: ${datamodule.alphabet}
+  learning:
+    noise: random_mask # enable cmlm training with uniform random masking
+  criterion:
+    _target_: byprot.modules.cross_entropy.Coord2SeqCrossEntropyLoss
+    label_smoothing: 0.0
+    ignore_index: 1
+  optimizer:
+    type: adamw
+    _partial_: true
+    lr: ${train.lr}
+    betas: 
+      - 0.9
+      - 0.98
+    weight_decay: 0.0001
+  lr_scheduler:
+    type: noam
+    warmup_steps: 4000
+    model_size: 128
+    lr: ${train.lr}
+    warmup_init_lr: 1e-07
+  generator:
+    max_iter: 5
+    strategy: 'denoise'
+
+train:
+  seed: 42
+  lr: 0.001
+  monitor: "val/acc_median"
+  mode: "max"
+
+trainer:
+  min_epochs: 10
+  max_epochs: 10000
+  gradient_clip_val: 0.0
+  # val_check_interval: 10
+  num_sanity_val_steps: 1
+  reload_dataloaders_every_n_epochs: 1
+  replace_sampler_ddp: false
+  max_steps: 200_000

@@ -1,0 +1,8 @@
+defaults:
+  - default.yaml
+
+gpus: auto
+strategy: ddp_sharded_fbo
+precision: 32
+
+# sync_batchnorm: True

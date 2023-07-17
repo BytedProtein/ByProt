@@ -1,0 +1,68 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - /datamodule: cath_4.2
+  - /callbacks: fixedbb
+  - /trainer: default
+
+# name of the run determines folder name in logs
+name: "fixedbb/cath_4.2/protein_mpnn_cmlm"
+
+datamodule:
+  alphabet:
+    name: protein_mpnn
+    featurizer: cath
+
+# model
+model:
+  _target_: protein_mpnn_cmlm
+  d_model: 128
+  n_enc_layers: 3
+  n_dec_layers: 3
+
+# task
+task:
+  _target_: fixedbb/cmlm
+  alphabet: ${datamodule.alphabet}
+  learning:
+    noise: random_mask # enable cmlm training with uniform random masking
+  criterion:
+    _target_: byprot.modules.cross_entropy.Coord2SeqCrossEntropyLoss
+    label_smoothing: 0.0
+    ignore_index: 0
+  optimizer:
+    type: adamw
+    lr: ${train.lr}
+    betas:
+      - 0.9
+      - 0.98
+    weight_decay: 0.0001
+  lr_scheduler:
+    type: noam
+    lr: ${train.lr}
+    warmup_steps: 4000
+    model_size: 128
+    warmup_init_lr: 1e-07
+  generator:
+    max_iter: 1
+    strategy: "mask_predict"
+
+# training related
+train:
+  seed: 42
+  lr: 3e-3
+  monitor: "val/acc_median"
+  mode: "max"
+
+trainer:
+  min_epochs: 10
+  max_epochs: 10000
+  gradient_clip_val: 0.0
+  # val_check_interval: 10
+  num_sanity_val_steps: 1
+  reload_dataloaders_every_n_epochs: 1
+  replace_sampler_ddp: false
+  max_steps: 200_000

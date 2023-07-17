@@ -1,0 +1,18 @@
+_target_: multichain
+
+# data_dir: ${data_dir} # data_dir is specified in config.yaml
+data_dir: '${paths.data_dir}/multichain/pdb_2021aug02'
+max_length: 1000
+atoms: ['N', 'CA', 'C', 'O']
+
+# alphabet related
+alphabet:
+  name: esm
+  featurizer: multichain
+  
+# dataloader related
+max_tokens: 10000
+sort: true
+num_workers: 8
+pin_memory: true
+debug: ${train.debug}
