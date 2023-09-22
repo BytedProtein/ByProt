@@ -27,9 +27,6 @@ ByProt serves as the official implementation of <span style="font-variant:small-
 We are continuously expanding ByProt's capabilities to encompass a broader range of tasks and features. Stay tuned for updates as we strive to provide an even more comprehensive toolkit for protein research.
 
 
-**TODO**
-- easy downloadable trained model weights.
-
 
 
 ## Installation
@@ -50,6 +47,17 @@ bash install.sh
 ```
 
 ## Structure-based protein sequence design (inverse folding)
+
+
+**Pretrained model weights**
+| model                | training data | checkpoint |
+|----------------------|------------|------------|
+| `protein_mpnn_cmlm`    | cath_4.2   | [link](https://drive.google.com/file/d/1PlbOTgScB1vQ1E806wxXdKukmeCIuWxQ/view?usp=drive_link)       |
+| `lm_design_esm1b_650m` | cath_4.2   | [link](https://drive.google.com/file/d/1II45fq8-1TDmtg3W43LMYsoyJfar0Avw/view?usp=sharing)       |
+| `lm_design_esm2_650m`  | cath_4.2   | [link](https://drive.google.com/file/d/19jkupcgKyu1OZIKX1uQeAl0mmcwD6hIN/view?usp=drive_link)       |
+
+
+
 
 ### Data
 
@@ -72,13 +80,15 @@ bash scripts/download_multichain.sh
 Go check `configs/datamodule/multichain.yaml` and set `data_dir` to the path of the downloaded multichain data. 
 
 
-OK we now get everything ready and can start to train a model.
+OK we now get everything ready and can start to train a model. 
 
 <!-- <br> -->
 
 
 ### Training
 In the following sections, we will use CATH 4.2 dataset as an runing example. You can likewise build your models on the multichain dataset to accommodate protein complexies.
+
+
 
 
 #### Example 1: Non-autoregressive (NAR) ProteinMPNN baseline
