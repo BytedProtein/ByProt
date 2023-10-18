@@ -176,3 +176,42 @@ class Designer:
         with open(saveto + '.html', 'w') as f:
             f.write(html.data)
 
+    def inpaint(self, start_ids, end_ids, generator_args={}, need_attn_weights=False):
+        batch = self.alphabet.featurize(raw_batch=[self._structure])
+        if self.cfg.cuda:
+            batch = utils.recursive_to(batch, self._device)
+
+        prev_tokens = batch['tokens'].clone()
+        for sid, eid in zip(start_ids, end_ids):
+            prev_tokens[..., sid:eid+1] = self.alphabet.mask_idx
+
+        batch['prev_tokens'] = prev_tokens
+        batch['prev_token_mask'] = prev_tokens.eq(self.alphabet.mask_idx) 
+
+        outputs = self.generator.generate(
+            model=self.model, 
+            batch=batch,
+            need_attn_weights=need_attn_weights,
+            replace_visible_tokens=True,
+            **generator_args
+        )
+        output_tokens = outputs[0]
+
+        original_segments = []
+        designed_segments = []
+        for sid, eid in zip(start_ids, end_ids): 
+            original_segment = self.alphabet.decode(
+                batch['tokens'][..., sid:eid+1].clone(), remove_special=False)
+            original_segments.append(original_segment)
+
+            designed_segment = self.alphabet.decode(
+                output_tokens[..., sid:eid+1].clone(), remove_special=False)
+            designed_segments.append(designed_segment)
+
+        output_tokens = self.alphabet.decode(output_tokens, remove_special=True)
+        self._predictions = GenOut(
+            output_tokens=output_tokens, 
+            output_scores=outputs[1],
+            attentions=outputs[2] if need_attn_weights else None
+        )
+        return self._predictions, original_segments, designed_segments

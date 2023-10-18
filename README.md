@@ -239,7 +239,41 @@ designer.calculate_metrics()
 ## recovery: 0.7595628415300546
 ```
 
+** Example 3: Inpainting **
+For some use cases, you may want to do inpainting on some segments of interest only while the rest of the protein remains the same (e.g., designing antibody CDRs). Here is a simple example with `inpaint` interface:
 
+```python
+pdb_path = "/root/research/projects/ByProt/data/pdb_samples/5izu_proc.pdb"
+designer.set_structure(pdb_path)
+
+start_ids = [1, 50]
+end_ids = [10, 100]
+
+for i in range(5):
+    out, ori_seg, designed_seg = designer.inpaint(
+        start_ids=start_ids, end_ids=end_ids, 
+        generator_args={'temperature': 1.0}
+    )
+    print(designed_seg)
+print('Original Segments:')
+print(ori_seg)
+```
+The output looks like:
+```bash
+loading backbone structure from /root/research/projects/ByProt/data/pdb_samples/5izu_proc.pdb.
+[['MVKSLFRHRT'], ['DEPIEEFTPTPAFPALQRLSSVDVEGVAWRAGLRTGDFLLEVNGVNVVKVG']]
+[['MTKALFRHQT'], ['ETPIEEFTPTPAFPALQHLSSVDVEGAAYRAGLRTGDFLIEVNGVNVVKVG']]
+[['STESLFRHAT'], ['ETPIEEFTPTPAFPALQHLSSVDVEGVAWRAGLRTGDFLIEVNGINVVKVG']]
+[['ATARMFRHLT'], ['ETPIEEFTPTPAFPALQYLSSVDVEGVAWRAGLKTGDFLIEVNGVNVVKVG']]
+[['ARKAKFRRYT'], ['ETPIEEFTPTPAFPALQVLSSVDVEGVAWRAGMRTGDFLLEVNGVNVVKVG']]
+[['ADARLFREYT'], ['ETPIEEFTPTPAFPALQHLSAVDVEGVAWRAGLLTGDFLIEVNGVNVVKVG']]
+[['ALRALFKHST'], ['DTPIEEFTPTPAFPALQYMSSVEVEGVAWRAGLRTGDFLIEVNGVNVVKVG']]
+[['MLKMLFRHYT'], ['ETPIEEFTPTPAFPALQYLSSVDIDGMAWRAGLRTGDFLIEVNGDNVVKVG']]
+[['ADKALFRHHT'], ['STPIEEFTPTPAFPALQYLESVDVDGVAYRAGLCTGDFLIEVNGVNVVKVG']]
+[['AAAAAFRHST'], ['KTPIEEFTPTPAFPALQYLSRVEVDGMAWRAGLRTGDFLLEVNGVNVVRVG']]
+Original Segments:
+[['RTKRLFRHYT'], ['ETPIEEFTPTPAFPALQYLESVDVEGVAWRAGLRTGDFLIEVNGVNVVKVG']]
+```
 
 ## Acknowledgements
 ByProt extends its gratitude to the following projects and individuals:
