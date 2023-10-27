@@ -49,12 +49,13 @@ bash install.sh
 ## Structure-based protein sequence design (inverse folding)
 
 
-**Pretrained model weights**
+**Pretrained model weights** ([Zenodo](https://zenodo.org/records/10046338))
 | model                | training data | checkpoint |
 |----------------------|------------|------------|
-| `protein_mpnn_cmlm`    | cath_4.2   | [link](https://drive.google.com/file/d/1PlbOTgScB1vQ1E806wxXdKukmeCIuWxQ/view?usp=drive_link)       |
-| `lm_design_esm1b_650m` | cath_4.2   | [link](https://drive.google.com/file/d/1II45fq8-1TDmtg3W43LMYsoyJfar0Avw/view?usp=sharing)       |
-| `lm_design_esm2_650m`  | cath_4.2   | [link](https://drive.google.com/file/d/19jkupcgKyu1OZIKX1uQeAl0mmcwD6hIN/view?usp=drive_link)       |
+| `protein_mpnn_cmlm`    | cath_4.2   | [link](https://zenodo.org/records/10046338/files/protein_mpnn_cmlm.zip?download=1)       |
+| `lm_design_esm1b_650m` | cath_4.2   | [link](https://zenodo.org/records/10046338/files/lm_design_esm1b_650m.zip?download=1)       |
+| `lm_design_esm2_650m`  | cath_4.2   | [link](https://zenodo.org/records/10046338/files/lm_design_esm2_650m.zip?download=1)       |
+| `lm_design_esm2_650m`  | multichain   | [link](https://zenodo.org/records/10046338/files/lm_design_esm2_650m_multichain.zip?download=1)       |
 
 
 
