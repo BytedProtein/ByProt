@@ -1,6 +1,7 @@
 from omegaconf import OmegaConf, DictConfig
 
 from byprot import utils
+from byprot.datamodules.datasets import Alphabet, DataProcessor
 from byprot.utils import io
 from byprot.utils.config import compose_config as Cfg
 from byprot.models.fixedbb.generator import IterativeRefinementGenerator
@@ -69,6 +70,7 @@ class Designer:
             self._cuda()
 
         self.alphabet = pl_task.alphabet
+        self.data_processor = DataProcessor()
 
         self.cfg.generator = utils.config.merge_config(
             pl_task.hparams.generator, self.cfg.generator
@@ -98,17 +100,28 @@ class Designer:
         self._structure = None
         self._predictions = None
 
-    def set_structure(self, pdb_path, verbose=False):
+    def set_structure(
+            self, 
+            pdb_path, 
+            chain_list=[],
+            masked_chain_list=None,
+            verbose=False
+        ):
         pdb_id = Path(pdb_path).stem
 
         print(f'loading backbone structure from {pdb_path}.')
-        coords, native_seq = io.load_coords(pdb_path, None)
+        # coords, native_seq = io.load_coords(pdb_path, None)
+        self._structure = self.data_processor.parse_PDB(
+            pdb_path, 
+            input_chain_list=chain_list, 
+            masked_chain_list=masked_chain_list
+        )
 
-        self._structure = {
-            'name': pdb_id,
-            'coords': coords, 
-            'seq': native_seq
-        }
+        # self._structure = {
+        #     'name': pdb_id,
+        #     'coords': coords, 
+        #     'seq': native_seq
+        # }
         if verbose: return self._structure
 
     def _featurize(self):

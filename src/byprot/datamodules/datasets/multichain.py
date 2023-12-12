@@ -962,7 +962,7 @@ class Featurizer(object):
     def __init__(self, alphabet):
         self.alphabet = alphabet
 
-    def __call__(self, raw_batch: dict, deterministic=True):
+    def __call__(self, raw_batch: dict, deterministic=False):
         return featurize(
             raw_batch,
             alphabet=self.alphabet,
