@@ -156,3 +156,4 @@ run/logs
 
 # pdb
 *.pdb
+!examples/*.pdb
