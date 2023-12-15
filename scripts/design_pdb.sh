@@ -6,7 +6,7 @@ model_path="/root/research/projects/ByProt/run/logs/fixedbb/cath_4.2/lm_design_e
 # model_path="/root/research/projects/ByProt_public/logs/fixedbb_multichain/lm_design_esm2_650m"
 
 temperature=0.1
-pdb_dir="/root/research/projects/ByProt/data/chroma/pdb_files"
+pdb_dir="/root/research/projects/ByProt/data/pdb_samples"
 out_dir="$pdb_dir/lm_design_fasta"
 
 python $DIR/design_pdb.py \
