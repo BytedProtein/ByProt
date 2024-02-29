@@ -1,0 +1,1 @@
+from .esm2_adapter import ESM2WithStructuralAdatper
