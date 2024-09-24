@@ -11,11 +11,12 @@ import numpy as np
 import torch
 from Bio import PDB
 from Bio.PDB import PDBExceptions
-from byprot import utils
 from dateutil import parser
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 from tqdm.auto import tqdm
+
+from byprot import utils
 
 from .data_utils import Alphabet
 
@@ -821,6 +822,8 @@ def featurize(
                      'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
     extra_alphabet = [str(item) for item in list(np.arange(300))]
     chain_letters = init_alphabet + extra_alphabet
+
+    tied_pos_list_of_lists_list = []
     for i, b in enumerate(batch):
         masked_chains = b['masked_list']
         visible_chains = b['visible_list']
@@ -927,6 +930,29 @@ def featurize(
         chain_encoding_pad = np.pad(chain_encoding, [[0, L_max - l]], 'constant', constant_values=(0.0, ))
         chain_encoding_all[i, :] = chain_encoding_pad
 
+        
+        letter_list_np = np.array(letter_list)
+        tied_pos_list_of_lists = []
+        tied_beta = np.ones(L_max)
+        if tied_positions_dict!=None:
+            tied_pos_list = tied_positions_dict[b['name']]
+            if tied_pos_list:
+                set_chains_tied = set(list(itertools.chain(*[list(item) for item in tied_pos_list])))
+                for tied_item in tied_pos_list:
+                    one_list = []
+                    for k, v in tied_item.items():
+                        start_idx = global_idx_start_list[np.argwhere(letter_list_np == k)[0][0]]
+                        if isinstance(v[0], list):
+                            for v_count in range(len(v[0])):
+                                one_list.append(start_idx+v[0][v_count]-1)#make 0 to be the first
+                                tied_beta[start_idx+v[0][v_count]-1] = v[1][v_count]
+                        else:
+                            for v_ in v:
+                                one_list.append(start_idx+v_-1)#make 0 to be the first
+                    tied_pos_list_of_lists.append(one_list)
+        tied_pos_list_of_lists_list.append(tied_pos_list_of_lists)
+        
+
     mask = np.isfinite(np.sum(X, (2, 3))).astype(np.float32)
     isnan = np.isnan(X)
     X[isnan] = 0.
@@ -942,6 +968,9 @@ def featurize(
     chain_M = torch.from_numpy(chain_M).to(dtype=torch.float32, device=device)
     chain_encoding_all = torch.from_numpy(chain_encoding_all).to(dtype=torch.long, device=device)
     # return X, S, mask, lengths, chain_M, residue_idx, mask_self, chain_encoding_all
+
+    
+
 
     out = dict(
         names=names,

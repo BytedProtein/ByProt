@@ -139,6 +139,7 @@ class Designer:
 
     def generate(self, generator_args={}, need_attn_weights=False):
         batch = self._featurize()
+        print(batch.keys())
 
         outputs = self.generator.generate(
             model=self.model, 
